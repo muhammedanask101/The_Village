@@ -69,6 +69,8 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    articles: Article;
+    clubs: Club;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -77,6 +79,8 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    articles: ArticlesSelect<false> | ArticlesSelect<true>;
+    clubs: ClubsSelect<false> | ClubsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -119,6 +123,9 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  username: string;
+  pfp?: (string | null) | Media;
+  roles: ('admin' | 'user')[];
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -158,6 +165,79 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: string;
+  title: string;
+  description?: string | null;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  user: string | User;
+  club: string | Club;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  image?: (string | null) | Media;
+  featured?: boolean | null;
+  date: string;
+  /**
+   * SEO title (auto-filled from article title if left blank)
+   */
+  metaTitle?: string | null;
+  /**
+   * SEO description (auto-filled from article description if left blank)
+   */
+  metaDescription?: string | null;
+  /**
+   * URL-friendly identifier (auto-generated from title if left blank)
+   */
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clubs".
+ */
+export interface Club {
+  id: string;
+  name: string;
+  slug: string;
+  color?: string | null;
+  /**
+   * Title for SEO (auto-generated from name if empty)
+   */
+  metaTitle?: string | null;
+  /**
+   * Description for SEO (auto-generated if empty)
+   */
+  metaDescription?: string | null;
+  /**
+   * Thumbnail image for sharing on social media (Optional)
+   */
+  ogImage?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -170,6 +250,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'articles';
+        value: string | Article;
+      } | null)
+    | ({
+        relationTo: 'clubs';
+        value: string | Club;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -218,6 +306,9 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  username?: T;
+  pfp?: T;
+  roles?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -252,6 +343,45 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  body?: T;
+  user?: T;
+  club?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  image?: T;
+  featured?: T;
+  date?: T;
+  metaTitle?: T;
+  metaDescription?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clubs_select".
+ */
+export interface ClubsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  color?: T;
+  metaTitle?: T;
+  metaDescription?: T;
+  ogImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

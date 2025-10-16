@@ -7,7 +7,29 @@ export const Users: CollectionConfig = {
   },
   auth: true,
   fields: [
-    // Email added by default
-    // Add more fields as needed
+    {
+      name: "username",
+      required: true,
+      unique: true,
+      type: "text",
+      minLength: 1,
+      maxLength: 20,
+    },
+    {
+      name: "pfp",
+      type: "upload",
+      relationTo: "media",
+    },
+    {
+      name: "roles",
+      type: "select",
+      defaultValue: ["user"],
+      hasMany: true,
+      required: true,
+      options: ["admin", "user"],
+      admin: {
+        position: "sidebar",
+      },
+    },
   ],
 }
